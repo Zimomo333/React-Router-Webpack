@@ -23,6 +23,9 @@ module.exports = {
                             // 添加 preset-react
                             "@babel/preset-react",      // 转义JSX
                             "@babel/preset-env"         // 转移ES6+
+                        ],
+                        plugins: [
+                            "@babel/plugin-proposal-class-properties"  // 解决报错 Support for the experimental syntax 'classProperties' isn't currently enabled
                         ]
                     }
                 }
