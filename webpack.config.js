@@ -7,6 +7,7 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         filename: 'bundle.js'               // 打包输出的js包名
     },
+    //mode: "production",
     devServer: {
         contentBase: './dist'               // server运行的资源目录
     },

@@ -27,7 +27,8 @@ npm i react react-dom -S
 
 npm i antd -S
 
-npm i react-router -S
+npm i react-router-dom -S
+npm i react-router-config -S
 
 npm i webpack webpack-cli webpack-dev-server -D         //server用于运行打包后的dist资源
 
