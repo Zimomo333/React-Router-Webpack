@@ -38,7 +38,7 @@ class Sidebar extends React.Component {
                     mode="inline"
                     theme="dark"
                 >
-                { this.nested(routes) }
+                { this.nested(routes[0].routes) }
                 </Menu>
             </div>
         );

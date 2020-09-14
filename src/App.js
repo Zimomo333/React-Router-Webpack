@@ -1,15 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { renderRoutes } from 'react-router-config';
+import { matchRoutes, renderRoutes } from 'react-router-config';
+import { Link } from "react-router-dom";
 import routes from './router'
 
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import Sidebar from './components/Sidebar'
+import { Breadcrumb } from 'antd';
 import './App.css'
 
 import { Layout } from 'antd';
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout;
 
 export default class App extends React.Component {
     state = {
@@ -23,6 +25,8 @@ export default class App extends React.Component {
     };
 
     render() {
+        const history = matchRoutes(routes, this.props.location.pathname).slice(1);
+        console.log(history)
         return (
             <div>
                 <Layout>
@@ -36,6 +40,16 @@ export default class App extends React.Component {
                                 className: 'trigger',
                                 onClick: this.toggle,
                             })}
+                            <Breadcrumb style={{ display: "inline" }}>
+                                <Breadcrumb.Item><Link to="/">首页</Link></Breadcrumb.Item>
+                                {
+                                    history.map( (item,index) => 
+                                            <Breadcrumb.Item key={index} >
+                                                <Link to={item.route.path}>{item.route.title}</Link>
+                                            </Breadcrumb.Item>
+                                    )
+                                }
+                            </Breadcrumb>
                         </Header>
                         <Content
                             className="site-layout-background"
@@ -45,7 +59,7 @@ export default class App extends React.Component {
                                 minHeight: 700
                             }}
                         >
-                            { renderRoutes(routes) }
+                            { renderRoutes(this.props.route.routes) }
                         </Content>
                     </Layout>
                 </Layout>

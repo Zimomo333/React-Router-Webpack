@@ -1,12 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import { HashRouter } from "react-router-dom";
+import { renderRoutes } from 'react-router-config';
+import routes from './router'
+
 import 'antd/dist/antd.css';
 
 ReactDOM.render(
     <HashRouter>
-        <App />
+        { renderRoutes(routes) }
     </HashRouter>,
     document.getElementById("root")
 );
