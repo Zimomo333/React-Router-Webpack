@@ -21,9 +21,8 @@ module.exports = {
                     options: {
                         // babel 转义的配置选项
                         presets: [
-                            // 添加 preset-react
                             "@babel/preset-react",      // 转义JSX
-                            "@babel/preset-env"         // 转移ES6+
+                            // "@babel/preset-env"      // 转移ES6+
                         ],
                         plugins: [
                             "@babel/plugin-proposal-class-properties"  // 解决报错 Support for the experimental syntax 'classProperties' isn't currently enabled
@@ -34,10 +33,6 @@ module.exports = {
             {
                 test: /\.css$/,             // 处理 antd 样式
                 loader: "style-loader!css-loader"
-            },
-            {
-                test: /\.(woff|ttf)$/,	    // 处理 antd 字体
-                loader: 'file-loader'
             }
         ]
     },

@@ -2,7 +2,7 @@
 
 ### 项目目的
 
-不使用vue-cli脚手架，从头搭建模块化开发环境
+不使用create-react-app，从头搭建模块化开发环境
 
 
 
@@ -27,15 +27,14 @@ npm i react react-dom -S
 
 npm i antd -S
 
-npm i react-router-dom -S
-npm i react-router-config -S
+npm i react-router-dom -S		// 核心库
+npm i react-router-config -S	// 官方路由配置助手(类似Vue Router，集中配置式路由)
 
 npm i webpack webpack-cli webpack-dev-server -D         //server用于运行打包后的dist资源
 
 <!-- webpack loader -->
 npm i babel-loader @babel/core @babel/preset-env @babel/preset-react	//解析jsx语法
 npm i css-loader style-loader -D            //解析 antd 的CSS文件
-npm i file-loader -D                        //解析 antd 的字体文件
 
 <!-- webpack plugin -->
 npm i html-webpack-plugin -D                //自动生成注入js的index.html
@@ -45,96 +44,92 @@ npm i html-webpack-plugin -D                //自动生成注入js的index.html
 
 ### 目录结构
 
-<div><img src="https://raw.githubusercontent.com/Zimomo333/Vue-Router-Webpack/master/picture/directory.PNG"></div>
+<div><img src="https://raw.githubusercontent.com/Zimomo333/React-Router-Webpack/master/picture/directory.PNG"></div>
 
 结构说明：
 
-| 文件/目录名         | 作用                                        |
-| ------------------- | ------------------------------------------- |
-| `webpack.config.js` | `webpack` 配置文件                          |
-| `routes.js`         | `Vue Router` 配置文件                       |
-| `main.js`           | 全局配置，`webpack`打包入口                 |
-| `App.vue`           | `Vue` 根组件                                |
-| `public/index.html` | `HtmlWebpackPlugin` 自定义`index.html` 模板 |
-| `views`目录         | 页面组件（业务页面）                        |
-| `components`目录    | 公用组件（导航栏、面包屑）                  |
-| `dist`目录          | `webpack`打包输出目录                       |
-| `node_modules`目录  | `npm` 模块下载目录                          |
+| 文件/目录名         | 作用                                         |
+| ------------------- | -------------------------------------------- |
+| `webpack.config.js` | `webpack` 配置文件                           |
+| `routes.js`         | `React Router Config` 集中配置式路由文件     |
+| `index.js`          | `React`渲染入口，全局配置，`webpack`打包入口 |
+| `App.js`            | 根组件                                       |
+| `public/index.html` | `HtmlWebpackPlugin` 自定义`index.html` 模板  |
+| `views`目录         | 页面组件（业务页面）                         |
+| `components`目录    | 公用组件（导航栏、面包屑）                   |
+| `dist`目录          | `webpack`打包输出目录                        |
+| `node_modules`目录  | `npm` 模块下载目录                           |
 
 
 
-### main.js
+### index.js
 
 ```javascript
-import App from './App.vue'
-import Vue from 'vue'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'	//ElementUI样式
-import router from './router'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { HashRouter } from "react-router-dom";
+import { renderRoutes } from 'react-router-config';     // 官方路由配置助手(类似Vue Router，集中式配置)
+import routes from './router'
 
-Vue.use(ElementUI);
+import 'antd/dist/antd.css';
 
-new Vue({
-    el: '#app',
-    router,
-    render: h => h(App)
-})
+ReactDOM.render(
+    <HashRouter>
+        {/* 路由根入口，选择在index.js放置根入口，是为了给App组件传递prop.location，用以获取当前路径构建面包屑 */}
+        { renderRoutes(routes) }
+    </HashRouter>,
+    document.getElementById("root")
+);
 ```
 
 
 
 ### router.js
 
-以 `/` 开头的嵌套路径会被当作根路径，因此子路由的path无需加 `/` 
-
 ```javascript
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { ProfileOutlined, UserOutlined } from '@ant-design/icons';
+import React, { PureComponent } from 'react'
+import App from './App'
+import Info from './views/Info'
+import Orders from './views/orders/index'
+import MyOrders from './views/orders/myOrders'
+import Submit from './views/orders/submit'
 
-Vue.use(VueRouter)
-
-export const routes = [
-    { 
-        path: '/info',
-        component: () => import('./views/info.vue'),
-        meta: { 
-            title: '个人中心',
-            icon: 'el-icon-user-solid'
-        }
-    },
-    { 
-        path: '/orders',        // 以 / 开头的嵌套路径会被当作根路径
-        component: () => import('./views/orders/index.vue'),    // 可写成{render: (e) => e("router-view")}，避免新建空router-view文件
-        meta: { 
-            title: '订单管理',
-            icon: 'el-icon-s-order'
-        },
-        children: [
+const routes = [
+    {
+        component: App,
+        routes: [
             {
-                path: 'my-orders',      // 子路由不要加 /
-                component: () => import('./views/orders/myOrders.vue'),
-                meta: { 
-                    title: '我的订单',
-                    icon: 'el-icon-s-order'
-                }
+                path: '/info',
+                component: Info,
+                title: '个人中心',
+                icon: UserOutlined
             },
-            {
-                path: 'submit',
-                component: () => import('./views/orders/submit.vue'),
-                meta: { 
-                    title: '提交订单',
-                    icon: 'el-icon-s-order'
-                }
+            { 
+                path: '/orders',
+                component: Orders,
+                title: '订单管理',
+                icon: ProfileOutlined,
+                routes: [
+                    {
+                        path: '/orders/my-orders',
+                        component: MyOrders,
+                        title: '我的订单',
+                        icon: ProfileOutlined
+                    },
+                    {
+                        path: '/orders/submit',
+                        component: Submit,
+                        title: '提交订单',
+                        icon: ProfileOutlined
+                    }
+                ]
             }
         ]
     }
 ]
 
-const router = new VueRouter({
-    routes // (缩写) 相当于 routes: routes
-})
-
-export default router
+export default routes
 ```
 
 
@@ -151,6 +146,7 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         filename: 'bundle.js'               // 打包输出的js包名
     },
+    //mode: "production",
     devServer: {
         contentBase: './dist'               // server运行的资源目录
     },
@@ -164,9 +160,11 @@ module.exports = {
                     options: {
                         // babel 转义的配置选项
                         presets: [
-                            // 添加 preset-react
                             "@babel/preset-react",      // 转义JSX
-                            "@babel/preset-env"         // 转移ES6+
+                            // "@babel/preset-env"      // 转移ES6+
+                        ],
+                        plugins: [
+                            "@babel/plugin-proposal-class-properties"  // 解决报错 Support for the experimental syntax 'classProperties' isn't currently enabled
                         ]
                     }
                 }
@@ -174,10 +172,6 @@ module.exports = {
             {
                 test: /\.css$/,             // 处理 antd 样式
                 loader: "style-loader!css-loader"
-            },
-            {
-                test: /\.(woff|ttf)$/,	    // 处理 antd 字体
-                loader: 'file-loader'
             }
         ]
     },
@@ -195,171 +189,163 @@ module.exports = {
 
 ### `public/index.html`模板
 
-默认生成的`index.html `没有 id="app" 挂载点，必须使用自定义模板
+默认生成的`index.html `没有 id="root" 挂载点，必须使用自定义模板
 
 ```html
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <div id="app">		<!-- App.vue根组件 挂载点 -->
-        </div>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react-router-wepack demo</title>
+</head>
+<body>
+    <div id="root"></div>
+</body>
 </html>
 ```
 
 
 
-### App.vue
+### App.js
 
-`import { xxx } from './xxx' ` 指定需要引用的模块
+从父路由传来的prop.location中获取当前路径
 
-`<style scoped>`  scoped 范围css 防止全局污染
+matchRoutes方法 根据当前路径，获取 路由匹配历史 数组，用以构建面包屑
 
-增加了一个全局样式，解决导航栏折叠时子菜单文字不隐藏的bug
+```react
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-```vue
-<template>
-    <div id="app">
-        <el-row class="tac">
-            <el-col :span="4">
-                <el-radio-group v-model="isCollapse">
-                    <el-radio-button :label="false">展开</el-radio-button>
-                    <el-radio-button :label="true">收起</el-radio-button>
-                </el-radio-group>
-                <h3>导航栏</h3>
-                <el-menu
-                :default-active="this.$route.path"
-                :collapse="isCollapse"
-                router
-                >
-                    <sidebar-item v-for="route in routes" :key="route.path" :item="route" />
-                </el-menu>
-            </el-col>
-            <el-col :span="16">
-                <el-breadcrumb separator="/">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item 
-                    v-for="item in this.$route.matched" 
-                    :key="item.path" 
-                    :to="item.path"
-                    >
-                        {{item.meta.title}}
-                    </el-breadcrumb-item>
-                </el-breadcrumb>
-                <h3>正文</h3>
-                <router-view />
-            </el-col>
-        </el-row>
-    </div>
-</template>
+import { matchRoutes, renderRoutes } from 'react-router-config';
+import { Link } from "react-router-dom";
+import routes from './router'
 
-<script>
-import { routes } from './router'   // {}指定需要引用的模块
-import SidebarItem from './components/SidebarItem.vue'
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import Sidebar from './components/Sidebar'
+import { Breadcrumb } from 'antd';
+import './App.css'
 
-export default {
-    name: 'App',
-    components: { 
-        SidebarItem
-    },
-    data() {
-        return {
-            isCollapse: true,
-            routes
-        }
+import { Layout } from 'antd';
+const { Header, Sider, Content } = Layout;
+
+export default class App extends React.Component {
+    state = {
+        collapsed: false
+    };
+    
+    toggle = () => {
+        this.setState({
+            collapsed: !this.state.collapsed
+        });
+    };
+
+    render() {
+        // 从父路由传来的prop.location中获取当前路径
+        // matchRoutes方法 根据当前路径，获取 路由匹配历史 数组
+        const history = matchRoutes(routes, this.props.location.pathname).slice(1);     //slice 去除首页 '/' 路由历史
+        return (
+            <div>
+                <Layout>
+                    <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
+                        <div className="logo" >React-Router-Webpack</div>
+                        <Sidebar />
+                    </Sider>
+                    <Layout className="site-layout">
+                        <Header className="site-layout-background" style={{ padding: 0 }}>
+                            {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                                className: 'trigger',
+                                onClick: this.toggle,
+                            })}
+                            <Breadcrumb style={{ display: "inline" }}>
+                                <Breadcrumb.Item><Link to="/">首页</Link></Breadcrumb.Item>
+                                {
+                                    history.map( (item,index) => 
+                                            <Breadcrumb.Item key={index} >
+                                                <Link to={item.route.path}>{item.route.title}</Link>
+                                            </Breadcrumb.Item>
+                                    )
+                                }
+                            </Breadcrumb>
+                        </Header>
+                        <Content
+                            className="site-layout-background"
+                            style={{
+                                margin: '24px 16px',
+                                padding: 24,
+                                minHeight: 700
+                            }}
+                        >
+                            {/* child routes won't render without this */}
+                            {/* 根据父组件传来的路由信息，渲染当前路由下的子路由所对应的组件 */}
+                            { renderRoutes(this.props.route.routes) }
+                        </Content>
+                    </Layout>
+                </Layout>
+            </div>
+        )
     }
 }
-</script>
-
-<style scoped>  /* scoped 范围css 防止全局污染 */
-h3 {
-    text-align: center;
-}
-.el-breadcrumb {
-    font-size: 1.17em;
-    margin: 21.92px;
-}
-.el-radio-group {
-    width:100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 13px;
-}
-</style>
-
-<style>     /* 解决导航栏折叠子菜单文字不隐藏的bug，必须覆盖全局样式 */
-/* 隐藏文字 */
-.el-menu--collapse .el-submenu__title span{
-	display: none;
-}
-/* 隐藏 > , 默认该i元素标签无hash值，因此scoped无效，必须使用全局样式覆盖 */
-.el-menu--collapse .el-submenu__title .el-submenu__icon-arrow{
-	display: none;
-}
-</style>
 ```
 
 
 
-### SidebarItem.vue(导航栏组件)
+### Sidebar.js(导航栏组件)
 
-组件自调用实现嵌套导航栏
+```react
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Link } from "react-router-dom";
+import { Menu } from 'antd';
+import  routes from "../router"
 
-传递basePath记录父路由路径，与子路由拼接成完整路径
+const { SubMenu } = Menu;
 
-```vue
-<template>
-  <!-- 隐藏不需要显示的路由 -->
-  <div v-if="!item.hidden">
-    <!-- 如果没有子路由 -->
-    <template v-if="!item.children">
-        <el-menu-item :key="item.path" :index="resolvePath(item.path)">
-          <i :class="item.meta.icon"></i>
-          <span slot="title">{{item.meta.title}}</span>
-        </el-menu-item>
-    </template>
-    <!-- 如果有子路由，渲染子菜单 -->
-    <el-submenu v-else :index="resolvePath(item.path)">
-      <template slot="title">
-          <i :class="item.meta.icon"></i>
-          <span slot="title">{{item.meta.title}}</span>
-      </template>
-      <sidebar-item v-for="child in item.children" :key="child.path" :item="child" :basePath="resolvePath(item.path)" />
-    </el-submenu>
-  </div>
-</template>
+class Sidebar extends React.Component {
 
-<script>
-import path from 'path'
-
-export default {
-  name: 'SidebarItem',    //组件自调用，必须有name属性
-  props: {                //接收父组件传参
-    item: {
-      type: Object,
-      required: true
-    },
-    basePath: {     //从父组件一直拼接下来的基路径
-      type: String,
-      default: ''
+    nested(routes) {    //递归渲染嵌套导航栏
+        return (
+            routes.map( route => {
+                if(!route.routes){
+                    return (
+                        <Menu.Item key={route.path} icon={<route.icon />}>
+                            <Link to={route.path}>{route.title}</Link>
+                        </Menu.Item>
+                    );
+                } else {
+                    return (
+                        <SubMenu key={route.path} icon={<route.icon />} title={route.title}>
+                            { this.nested(route.routes) }
+                        </SubMenu>
+                    );
+                }
+            })
+        );
     }
-  },
-  methods: {
-    //拼接父子路径
-    resolvePath(routePath) {
-      return path.resolve(this.basePath,routePath)
+
+    render() {
+        return (
+            <div>
+                <Menu
+                    onClick={this.handleClick}
+                    defaultSelectedKeys={['1']}
+                    defaultOpenKeys={['sub1']}
+                    mode="inline"
+                    theme="dark"
+                >
+                {/* 取route[0] 导航栏省略外层App组件 */}
+                { this.nested(routes[0].routes) }
+                </Menu>
+            </div>
+        );
     }
-  }
 }
-</script>
+
+export default Sidebar
 ```
 
 
 
 ### 项目展示
 
-<div align=center><img src="https://raw.githubusercontent.com/Zimomo333/Vue-Router-Webpack/master/picture/display.gif"></div>
+<div align=center><img src="https://raw.githubusercontent.com/Zimomo333/React-Router-Webpack/master/picture/display.gif"></div>

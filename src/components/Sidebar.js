@@ -7,8 +7,8 @@ import  routes from "../router"
 const { SubMenu } = Menu;
 
 class Sidebar extends React.Component {
-    
-    nested(routes) {
+
+    nested(routes) {    //递归渲染嵌套导航栏
         return (
             routes.map( route => {
                 if(!route.routes){
@@ -38,6 +38,7 @@ class Sidebar extends React.Component {
                     mode="inline"
                     theme="dark"
                 >
+                {/* 取route[0] 导航栏省略外层App组件 */}
                 { this.nested(routes[0].routes) }
                 </Menu>
             </div>

@@ -25,8 +25,9 @@ export default class App extends React.Component {
     };
 
     render() {
-        const history = matchRoutes(routes, this.props.location.pathname).slice(1);
-        console.log(history)
+        // 从父路由传来的prop.location中获取当前路径
+        // matchRoutes方法 根据当前路径，获取 路由匹配历史 数组
+        const history = matchRoutes(routes, this.props.location.pathname).slice(1);     //slice 去除首页 '/' 路由历史
         return (
             <div>
                 <Layout>
@@ -59,6 +60,8 @@ export default class App extends React.Component {
                                 minHeight: 700
                             }}
                         >
+                            {/* child routes won't render without this */}
+                            {/* 根据父组件传来的路由信息，渲染当前路由下的子路由所对应的组件 */}
                             { renderRoutes(this.props.route.routes) }
                         </Content>
                     </Layout>
