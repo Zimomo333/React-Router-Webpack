@@ -2,7 +2,7 @@
 
 ### 项目目的
 
-不使用create-react-app，从头搭建模块化开发环境
+不使用create-react-app，从头搭建 `React` 模块化开发环境
 
 
 
@@ -10,16 +10,17 @@
 
 1. 导航栏（折叠）
 2. 面包屑
-3. 正文区域
+3. React-Router（路由功能）
+4. Wepack打包压缩，热加载本地服务器
 
 
 
 ### 项目依赖
 
 1. React
-2. React Router
+2. React Router（react-router-dom、react-router-config）
 3. Ant Design
-4. webpack
+4. webpack（@babel/preset-react，jsx转译器）
 
 ```shell
 npm init
@@ -30,14 +31,14 @@ npm i antd -S
 npm i react-router-dom -S		// 核心库
 npm i react-router-config -S	// 官方路由配置助手(类似Vue Router，集中配置式路由)
 
-npm i webpack webpack-cli webpack-dev-server -D         //server用于运行打包后的dist资源
+npm i webpack webpack-cli webpack-dev-server -D         // 热加载本地server，用于运行打包后的dist资源
 
 <!-- webpack loader -->
-npm i babel-loader @babel/core @babel/preset-env @babel/preset-react	//解析jsx语法
-npm i css-loader style-loader -D            //解析 antd 的CSS文件
+npm i babel-loader @babel/core @babel/preset-env @babel/preset-react	// 解析jsx语法
+npm i css-loader style-loader -D            // 解析 antd 的CSS文件
 
 <!-- webpack plugin -->
-npm i html-webpack-plugin -D                //自动生成注入js的index.html
+npm i html-webpack-plugin -D                // 自动生成注入js的index.html
 ```
 
 
@@ -61,6 +62,12 @@ npm i html-webpack-plugin -D                //自动生成注入js的index.html
 | `node_modules`目录  | `npm` 模块下载目录                           |
 
 
+
+
+
+
+
+## React-Router
 
 ### index.js
 
@@ -134,6 +141,12 @@ export default routes
 
 
 
+
+
+
+
+## Webpack
+
 ### webpack.config.js
 
 ```javascript
@@ -185,8 +198,6 @@ module.exports = {
 
 
 
-
-
 ### `public/index.html`模板
 
 默认生成的`index.html `没有 id="root" 挂载点，必须使用自定义模板
@@ -206,6 +217,12 @@ module.exports = {
 ```
 
 
+
+
+
+
+
+## 组件
 
 ### App.js
 
